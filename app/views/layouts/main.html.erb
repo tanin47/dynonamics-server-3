@@ -24,7 +24,7 @@
 			if $user
 		%>
 			<span id="nav_header" style="display:none;">
-				<%=Net::HTTP.get('nav.heroku.com', '/v1/providers/header')%>
+				<%==Net::HTTP.get('nav.heroku.com', '/v1/providers/header')%>
 			</span>
 		<%
 			end
