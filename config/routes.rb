@@ -59,9 +59,9 @@ DynonamicsServer3::Application.routes.draw do
 #    resources :resources
 #  end
   
-  match 'heroku/resources' => 'heroku#create', :via => :post 
-  match 'heroku/resources/:id' => 'heroku#destroy', :via => :delete 
-  match 'heroku/resources/:id' => 'home#index', :via => :get 
+  match 'heroku/resources' => 'heroku#create', :via => [:post] 
+  match 'heroku/resources/:id' => 'heroku#destroy', :via => [:delete]
+  match 'heroku/resources/:id' => 'home#index', :via => [:get] 
 
   match 'dynologger/:dynonamics_key' => 'dynologger#index'
 
