@@ -1,5 +1,5 @@
 class HomeController < ApplicationController
-  protect_from_forgery
+#  protect_from_forgery
   before_filter :authenticate_heroku_single_signon, :check_admin
   
   def index
