@@ -1,0 +1,15 @@
+<script language="javascript">
+	
+	function get_result(number) {
+		if (number > 20) return;
+		$.post('/tuner?incoming_time=' + number+'&test_mode=yes', function(data){
+			$('#result').append(data+"<br/>")
+			get_result(number+1)	
+		})
+	}
+	
+	get_result(1);
+</script>
+<span id="result">
+		
+</span>

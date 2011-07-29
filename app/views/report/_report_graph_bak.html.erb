@@ -1,0 +1,71 @@
+<%
+	dyno_histories = DynoHistory.all(:conditions=>["created_time >= '"+date.to_s+" 00:00:00' and created_time <= '"+date.to_s+" 23:59:59' and user_id = '"+$user.id.to_s+"'"],:order=>"created_time asc")
+%>
+
+<span class="span-98 margin-top-2" id="report_unit">
+	<span class="graph_display_bg">
+		<span class="graph_start">
+	<%
+		if dyno_histories.length > 0
+			left = 0
+			dyno = dyno_histories[0]
+			bar_width, bar_height = calculate_bar(dyno.before_number,Time.utc(dyno.created_time.year,dyno.created_time.month,dyno.created_time.day,00,00,00),dyno.created_time,20,30)
+	%>
+			<span class="graph_bar" style="width:<%=bar_width%>px; height:<%=bar_height%>px; left:<%=left%>px;">
+			<!-- [ height = DYNO : 20px = 1dyno ] , [ ("width = Time : 30px = 1hr.") -1px ] [ Left = ("Width of span before") + 1px ] --> 
+			</span>
+		<%
+			if dyno_histories.length > 1
+				(1..dyno_histories.length-1).each do |i|
+				left = left + bar_width
+				d1 = dyno_histories[i-1]
+				d2 = dyno_histories[i] 
+				bar_width, bar_height = calculate_bar(d1.after_number,d1.created_time,d2.created_time,20,30)
+				
+		%>
+				<span class="graph_bar" style="width:<%=bar_width%>px; height:<%=bar_height%>px; left:<%=left%>px;">
+				</span>
+				<%end%>
+		<%
+			end
+		
+				left = left + bar_width
+				d_last = dyno_histories[dyno_histories.length-1]
+				time_end = Time.utc(d_last.created_time.year,d_last.created_time.month,d_last.created_time.day,23,59,59)
+				time_end = Time.now if Time.now < time_end
+
+				bar_width, bar_height = calculate_bar(d_last.after_number,d_last.created_time,time_end,20,30)
+				
+				bar_width = 720 - left if Time.now > time_end
+		%>
+				<span class="graph_bar" style="width:<%=bar_width%>px; height:<%=bar_height%>px; left:<%=left%>px;">
+				</span>
+	<%
+		else
+				lastest_record = DynoHistory.first(:conditions=>["created_time < '"+date.to_s+" 00:00:00' and user_id = '"+$user.id.to_s+"'"],:order=>"created_time desc")
+				if lastest_record
+					left = 0
+					dyno = lastest_record
+					time_end = Time.utc(dyno.created_time.year,dyno.created_time.month,dyno.created_time.day,23,59,59)
+					time_end = Time.now if Time.now < time_end
+					bar_width, bar_height = calculate_bar(dyno.after_number,Time.utc(dyno.created_time.year,dyno.created_time.month,dyno.created_time.day,00,00,00),time_end,20,30)
+					
+					bar_width = 720 - left if Time.now > time_end
+	%>
+					<span class="graph_bar" style="width:<%=bar_width%>px; height:<%=bar_height%>px; left:<%=left%>px;">
+					<!-- [ height = DYNO : 20px = 1dyno ] , [ ("width = Time : 30px = 1hr.") -1px ] [ Left = ("Width of span before") + 1px ] --> 
+					</span>
+				<%
+					else
+				%>
+					<span class="graph_nodata">
+					</span>
+				<%
+					end
+				%>
+	<%
+		end
+	%>
+		</span>
+	</span>
+</span>

@@ -1,0 +1,145 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<title>Dynonamics</title>
+		<%= javascript_include_tag "jquery-1.5.min.js"%>
+		<%= javascript_include_tag "jquery.loading_button.js"%>
+		<%= javascript_include_tag "form_validator_helper.js"%>
+		<%=stylesheet_link_tag("/ruby_box/jquery.ruby_box.css")%>
+		<%= javascript_include_tag "/ruby_box/jquery.ruby_box.js" %>
+		<%=stylesheet_link_tag("reset.css")%>
+		<%=stylesheet_link_tag("dynonamics.css")%>
+		
+		<%=stylesheet_link_tag("jquery.ui.core.css")%>
+		<%=stylesheet_link_tag("jquery.ui.theme.css")%>
+		<%=stylesheet_link_tag("jquery.ui.datepicker.css")%>
+		<%= javascript_include_tag "jquery.ui.core.js"%>
+		<%= javascript_include_tag "jquery.ui.datepicker.js"%>
+		
+	</head>
+	<body style="margin:0px 0px 0px 0px;padding: 0px 0px 0px 0px;">
+		<%
+			if $user
+		%>
+			<span id="nav_header" style="display:none;">
+				<%=Net::HTTP.get('nav.heroku.com', '/v1/providers/header')%>
+			</span>
+		<%
+			end
+		%>
+		<div class="global_container" class="margin-top-1">
+			<div class="container">
+				<span class="span-68">
+					<span class="float-left" style="width:666px; margin-left:5px;">
+						<span class="span-666 height-9 margin-top-2 margin-bottom-1">
+							<span class="float-left logo_dynonamics margin-left-6">
+							</span>
+							<span class="float-left margin-top-1 text-shadow-black font60 bold_font align_center" style="color:#a9d2de; margin-left:60px;">
+								Dynonamics
+							</span>
+						</span>
+					</span>
+					<span class="span-67 float-left margin-left-1" style="line-height:20px;font-size:20px;font-weight:bold;text-align:center;color:#72859E;">
+						<%
+							clause = "NOT(`api_key` = '') AND NOT(`api_key` IS NULL) AND `status`='#{User::STATUS_ACTIVE}'"
+							app_count = User.count(:conditions=>[clause])
+							user_count = User.first(:select=>"COUNT(DISTINCT username) AS count",:conditions=>[clause])
+						%>
+						<%=number_with_delimiter(app_count)%> apps, <%=number_with_delimiter(user_count.count)%> unique users <br/>
+						<span style="font-size:12px;">(currently connected)</span>
+					</span>
+				</span>
+				<span class="span-68 height25px margin-top-1">
+					<span class="left_top_corner">
+					</span>
+					<span class="span-63 height25px">
+						<span class="top_border span-63">
+						</span>
+						<span class="span-63 height-2 dynonamics_purple">
+						</span>
+					</span>
+					<span class="right_top_corner">
+					</span>
+				</span>
+				<span class="span-68 content_bg">
+					<span class="span-666 align_center dynonamics_purple" style="margin-left:5px;color:#72859e;font-size:28px;">
+						<%
+							if $user
+						%>
+							<a href="/home" class="margin-left-1 <%='menu_selected' if params[:controller] == 'home'%>">
+								Setting
+							</a>
+							<a href="/report" class="margin-left-1 <%='menu_selected' if params[:controller] == 'report'%>">
+								Report
+							</a>
+						<%
+							end
+						%>
+						<a href="/help" class="margin-left-1 <%='menu_selected' if params[:controller] == 'help' and params[:action]=='index'%>">
+							Help
+						</a
+					</span>
+					<span class="span-666 hr margin-top-1 margin-bottom-1">
+					</span>
+				</span>
+				<span class="span-68 content_bg">
+					<span class="span-666" style="margin-left:5px;color:#72859e;">
+						<%=yield%>
+					</span>
+				</span>
+				<span class="span-68 height25px">
+					<span class="left_bottom_corner">
+					</span>
+					<span class="span-63 height25px">
+						<span class="span-63 dynonamics_purple" style="height:16px;">
+						</span>
+						<span class="bottom_border span-63">
+						</span>
+					</span>
+					<span class="right_bottom_corner">
+					</span>
+				</span>
+			</div>
+			<span  class="span-68 height25px align_center medium_gray font11">
+				<%
+					if $user
+				%>
+					<a href="/home" class="medium_gray font11 light_font">Setting</a>
+					|
+					<a href="/report" class="medium_gray font11 light_font">Report</a>
+					|
+				<%
+					end
+				%>
+				<a href="/help" class="medium_gray font11 light_font">Help</a>
+				|
+				<a href="/help/terms" class="medium_gray font11 light_font">Terms of Use</a>
+			</span>
+		</div>
+		
+		<%
+			if $user and $is_admin
+		%>
+				<span class="span-68 margin-top-1">
+					You are <%=$user.app_name%> (<%=$user.username%>)<br/>
+					<%
+						users = User.all()
+						users.each do |user|
+					%>
+						<a href="<%=request.path%>?impersonated_user=<%=user.id%>">
+							<%=user.app_name%> (username=<%=user.username%>,id=<%=user.id%>)
+						</a><br/>
+					<%
+						end
+					%>
+				</span>
+		<%
+			end
+		%>
+	</body>
+</html>
+<script language="javascript">
+	$(function() { $('#nav_header').show(); });
+</script>

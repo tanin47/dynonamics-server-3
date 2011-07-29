@@ -1,0 +1,152 @@
+<%
+	params[:date] = Time.parse(params[:date]) if params[:date]
+	params[:date] ||= DateTime.now
+%>
+<span class="span-666 margin-top-1 margin-bottom-1" style="color:#72859e;">
+	<span class="span-666 font16 bold_font margin-left-2" style="color:#BFB8E5;line-height:35px;">
+		Dynos and Average waiting time
+	</span>
+	<span class="span-64 margin-left-3 margin-top-1" style="color:#BFB8E5;font-size: 14px;line-height: 22px;">
+		The below graph shows data of Dynos and Waiting time throughout <%=params[:date].strftime('%d %b %Y')%> 
+	</span>
+	<span class="span-64 margin-left-3 margin-top-1" style="color:#BFB8E5;font-size: 14px;line-height: 22px;">
+		<span class='float-left'>
+			Please select date: 
+		</span>
+		<input class="dark_gray span-15 postbox_input margin-left-1" style="margin-top:2px;"  id="view_date"  onkeyup="item_form_validator.validate(this);" type="text" value="<%=params[:date].strftime('%d %b %Y')%>" onchange="location.href='/report?date='+$(this).val()"/>
+	</span>
+	<span id="dyno_graph" class="span-666 margin-left-2 margin-top-2" style="height:400px;width:700px;">
+	
+	</span>
+	<span class="span-666 hr margin-top-1">
+	</span>
+</span>
+	<script language="javascript" type="text/javascript" src="/flot/jquery.flot.js"></script>
+	
+	<%
+		date = params[:date].strftime('%Y-%m-%d')
+		dyno_histories = DynoHistory.all(:conditions=>["created_time >= '#{date} 00:00:00' and created_time <= '#{date} 23:59:59' and user_id = '#{$user.id}'"],:order=>"created_time asc")
+		
+		dyno_data = []
+		waiting_time_data = dyno_histories.map { |d| {:t=>d.before_avg_waiting_time,:on=>d.created_time}}
+
+		start_day = Time.utc(params[:date].year,params[:date].month,params[:date].day,00,00,00)
+		end_day = Time.utc(params[:date].year,params[:date].month,params[:date].day,23,59,59)	
+	
+		if dyno_histories.length > 0
+			dyno_data.push({:left=>0,:width=>(dyno_histories[0].created_time - start_day).to_f/3600,:height=>dyno_histories[0].before_number})
+			
+			if dyno_histories.length > 1
+				(1..dyno_histories.length-1).each do |i|
+					d1,d2 = dyno_histories[i-1],dyno_histories[i] 
+					dyno_data.push({:left=>(dyno_data.last[:left] + dyno_data.last[:width]),:width=>(d2.created_time - d1.created_time).to_f/3600,:height=>d1.after_number})	
+				
+				end
+			end
+			
+			d_last = dyno_histories[dyno_histories.length-1]
+			time_end = (Time.now < end_day) ? Time.now : end_day
+	
+			dyno_data.push({:left=>(dyno_data.last[:left] + dyno_data.last[:width]),:width=>(time_end - d_last.created_time).to_f/3600,:height=>d_last.after_number})	
+		else
+			lastest_record = DynoHistory.first(:conditions=>["created_time < '"+date.to_s+" 00:00:00' and user_id = '"+$user.id.to_s+"'"],:order=>"created_time desc")
+			if lastest_record
+				dyno = lastest_record
+				time_end = (Time.now < end_day)? Time.now : end_day
+	
+				dyno_data.push({:left=>0,:width=>(time_end - dyno.created_time).to_f/3600,:height=>dyno.after_number})	
+			end
+		end
+	
+		#transform data to line data
+		if dyno_data.length > 0
+			temp_data = []
+			dyno_data.each_index { |i|
+				temp_data.push({:x=>dyno_data[i][:left],:y=>dyno_data[i][:height]})
+			}
+		
+			temp_data.push({:x=>dyno_data.last[:left]+dyno_data.last[:width],:y=>dyno_data.last[:height]})
+			dyno_data = temp_data
+		end
+
+		if waiting_time_data.length > 0
+			waiting_time_data.insert(0,{:t=>waiting_time_data[0][:t],:on=>start_day})
+			waiting_time_data.push({:t=>waiting_time_data.last[:t],:on=>end_day})
+		end
+	%>
+		
+	<script language="javascript">
+		$.plot($("#dyno_graph"), [
+			{
+				label: "&nbsp; Dynos",
+				data: [
+					<%=dyno_data.map { |d| "[#{d[:x]},#{d[:y]}]"}.join(",")%>
+				],
+				lines: { show: true,fill:true }
+			},
+			{
+				label: "&nbsp; Waiting Time",
+				data: [
+					<%=waiting_time_data.map {|d| "[#{(d[:on]-start_day).to_f/3600},#{(d[:t]*1000).to_i}]"}.join(",")%>
+				],
+				lines: { show: true },
+				yaxis: 2
+			},
+			{
+				data: [[0,<%=($user.avg_waiting_time*1000).to_i%>],[24,<%=($user.avg_waiting_time*1000).to_i%>]],
+				lines: { show: true },
+				color: "rgba(200, 200, 200, 0.5)",
+				yaxis: 2
+			}
+			],{
+				xaxis: {
+					min: 0,
+					max: 24,
+					show: true,
+					ticks:12,
+					tickFormatter: function (n,axis){
+						if (n == axis.max)
+							return "Time"
+						else
+							return n+":00"
+					}
+				},
+				yaxes: [{
+					min: 0,
+					max: 26,
+					show: true,
+					ticks:12,
+					position:"left",
+					tickFormatter: function (n,axis){
+						if (n == axis.max)
+							return "Dynos"
+						else
+							return n
+					}
+				},{
+					min: 0,
+					max: <%=($user.avg_waiting_time*1000*3).to_i%>,
+					show: true,
+					ticks:4,
+					position:"right",
+					tickFormatter: function (n,axis){
+						if (n == axis.max)
+							return "Waiting time"
+						else if (n == <%=($user.avg_waiting_time*1000).to_i%>)
+							return n + " ms\n(Expected)" 
+						else
+							return n+" ms"
+					}	
+				}]
+			})
+	</script>
+	<script language="javascript">
+		$(function() {
+				$("#view_date").datepicker({
+					changeMonth: true,
+					changeYear: true,
+					dateFormat: 'dd M yy',
+					maxDate: 0
+			});
+		});
+	</script>

@@ -1,0 +1,158 @@
+
+<span class="span-666 margin-top-1 margin-bottom-1">
+	<span class="span-666 font16 bold_font margin-left-2" style="color:#BFB8E5;line-height:35px;">
+		&bull; <a href="#q0">What is Dynonamics?</a><br/>
+		&bull; <a href="#q0.5">Dynonamics is free, why?</a><br/>
+		&bull; <a href="#q1">How to install Dynonamics?</a><br/>
+		&bull; <a href="#q2">Why do we need your Password?</a><br/>
+		&bull; <a href="#q3">How does Dynonamics scale your dynos?</a><br/>
+		&bull; <a href="#q4">How does Dynonamics decide the appropriate number of dynos?</a><br/>
+		&bull; <a href="#q5">Who are we?</a><br/>
+	</span>
+	<span class="span-666 hr margin-top-1">
+	</span>
+</span>
+<span class="span-666 margin-top-1 margin-bottom-1">
+	<a name="q0"></a>
+	<span class="span-666 font16 bold_font margin-left-2" style="color:#BFB8E5;line-height:35px;">
+		What is Dynonamics?
+	</span>
+	<span class="span-64 margin-left-3 margin-top-1" style="color:#BFB8E5;font-size: 14px;line-height: 22px;">
+		<p>
+			Dynonamics is a Heroku plugin, which scales your Dynos automatically according to your application's traffic.
+			It helps reduce the unnecessary cost of Dynos and also prevents your application from request overloads.<br/><br/>
+			Dynonamics is in the alpha testing phase right now. We offer the service for free during the alpha testing phrase. Therefore, please enjoy our service!
+		</p>
+	</span>
+	<span class="span-666 hr margin-top-1">
+	</span>
+</span>
+<span class="span-666 margin-top-1 margin-bottom-1">
+	<a name="q0.5"></a>
+	<span class="span-666 font16 bold_font margin-left-2" style="color:#BFB8E5;line-height:35px;">
+		Dynonamics is free, why?
+	</span>
+	<span class="span-64 margin-left-3 margin-top-1" style="color:#BFB8E5;font-size: 14px;line-height: 22px;">
+		<p>
+			Dynonamics is in the alpha testing phase. Therefore, we offer this service for free at the moment.
+		</p>
+	</span>
+	<span class="span-666 hr margin-top-1">
+	</span>
+</span>
+<span class="span-666 margin-top-1 margin-bottom-1">
+	<a name="q1"></a>
+	<span class="span-666 font16 bold_font margin-left-2" style="color:#BFB8E5;line-height:35px;">
+		How to install Dynonamics?
+	</span>
+	<span class="span-64 margin-left-3 margin-top-1" style="color:#BFB8E5;font-size: 14px;line-height: 22px;">
+		<p>You need to follow these steps:</p><br/>
+		<p>
+			1. Install Dynonamics plugin to your heroku application with the command: <br/><br/>
+		 	<font style="font-family: Courier;margin-left:20px;">heroku addons:add dynonamics --app &lt;your_app_name&gt;</font>
+		</p><br/>
+		<p>
+			2. Download Dynonamics from <a href="https://github.com/tanin47/dynonamics" target="_blank_aaa">https://github.com/tanin47/dynonamics</a>
+		</p>
+		<p>
+			3. Put everything under the folder <font style="font-family: Courier;">dynonamics</font>
+		</p>
+		<p>
+			4. Put <font style="font-family: Courier;">dynonamics</font> under your Rails's <font style="font-family: Courier;">/vendor/plugins</font>
+		</p>
+		<p style="margin-left:20px;">
+			Your folder structure should look as below: <br/><br/>
+			<img src="/images/folder_structure.jpg" border="1" style="border:1px solid #000000;"/>
+		</p>
+		<p>
+			5. After you have pushed a new update to Heroku repository, please restart your app to make sure that the plugin is loaded:<br/><br/>
+		 	<font style="font-family: Courier;margin-left:20px;">heroku restart --app &lt;your_app_name&gt;</font>
+		</p><br/>
+		<p>
+			6. Login to Heroku, go to your app, and go to Dynonamics plugin in order to change the settings.<br/><br/>
+			<font style="margin-left:20px;display:block;">
+				<ul>
+					<li style="list-style:disc inside none;">The default minimum dynos is 2</li>
+					<li style="list-style:disc inside none;">The default maximum dynos is 5</li>
+					<li style="list-style:disc inside none;">The default average waiting time is 100ms</li>
+				</ul><br/>
+				Please adjust it as appropriate.
+			</font>
+		</p>
+	</span>
+	<span class="span-666 hr margin-top-1">
+	</span>
+</span>
+<span class="span-666 margin-top-1 margin-bottom-1" style="color:#72859e;">
+	<a name="q2"></a>
+	<span class="span-666 font16 bold_font margin-left-2" style="color:#BFB8E5;line-height:35px;">
+		Why do we need your Password?
+	</span>
+	<span class="span-61 margin-left-3 margin-top-1" style="color:#BFB8E5;font-size: 14px;line-height: 22px;">
+		<p>
+			As creators of our own e-commerce websites and applications, we understand the concerns involved when sharing your password with an outside company. We do NOT retain your password. We only need it at the beginning so that Heroku can verify us. After we have been verified, Heroku will give us an API key in order to adjust your dynos in the future.<br/><br/>
+			<b>For additional security, you can change your password after we have been verified.</b>
+		</p>
+	</span>
+	<span class="span-666 hr margin-top-1">
+	</span>
+</span>
+<span class="span-666 margin-top-1 margin-bottom-1" style="color:#72859e;">
+	<a name="q3"></a>
+	<span class="span-666 font16 bold_font margin-left-2" style="color:#BFB8E5;line-height:35px;">
+		How does Dynonamics scale your dynos?
+	</span>
+	<span class="span-61 margin-left-3 margin-top-1" style="color:#BFB8E5;font-size: 14px;line-height: 22px;">
+		<p>
+			We adjust your dynos using your email and the API Key (obtained from Heroku) through Heroku's REST API.
+		</p>
+	</span>
+	<span class="span-666 hr margin-top-1">
+	</span>
+</span>
+<span class="span-666 margin-top-1 margin-bottom-1" style="color:#72859e;">
+	<a name="q4"></a>
+	<span class="span-666 font16 bold_font margin-left-2" style="color:#BFB8E5;line-height:35px;">
+		How does Dynonamics decide the appropriate number of dynos?
+	</span>
+	<span class="span-61 margin-left-3 margin-top-1" style="color:#BFB8E5;font-size: 14px;line-height: 22px;">
+		<p>
+			We model the occurrences of incoming requests with <a href="http://en.wikipedia.org/wiki/Poisson_distribution" target="_blank_aaa">Poisson distribution</a>.
+			Given an average waiting time, we apply <a href="http://en.wikipedia.org/wiki/M/M/c_model" target="_blank_aaa">an M/M/C model in Queue Theory</a> to determine the appropriate number of dynos.
+			Currently, we are experimenting with several models and techniques, including <a href="http://en.wikipedia.org/wiki/Extrapolation" target="_blank_aaa">Extrapolation</a>, in order to predict future incoming requests and, ultimately, adjust dynos to exactly match the need.		
+		</p><br/>
+		<p>
+			You can decide your own average waiting time. It can be set on 
+			<%
+				if $user
+			%>
+				<a href="/home">the setting page</a>. 
+			<%
+				else
+			%>
+				the setting page.
+			<%
+				end
+			%>
+			Please keep in mind that the smaller the avg. waiting time is, the more dynos you will need.
+		</p><br/>
+		<p>
+			We recommend that you use 100 milliseconds as the average waiting time.
+		</p>
+	</span>
+	<span class="span-666 hr margin-top-1">
+	</span>
+</span>
+<span class="span-666 margin-top-1 margin-bottom-1" style="color:#72859e;">
+	<a name="q5"></a>
+	<span class="span-666 font16 bold_font margin-left-2" style="color:#BFB8E5;line-height:35px;">
+		Who are we?
+	</span>
+	<span class="span-61 margin-left-3 margin-top-1" style="color:#BFB8E5;font-size: 14px;line-height: 22px;">
+		<p>
+			Whowish is a new tech firm of young programmers. We are the creators of the Facebook applications SwapSquare, CollegeSwap, 2Meet4, and Squeks. Our company has appeared in leading online media such as ZippyCart, All Facebook, StartupLift, the New York Daily News, and the San Francisco Chronicle. Our programming team is led by our CTO, Tanin Na Nakorn, a graduate of the University of Edinburgh. To view our other apps visit our website <a href="http://www.whowish.com">www.whowish.com</a>
+		</p>
+	</span>
+	<span class="span-666 hr margin-top-1">
+	</span>
+</span>

@@ -1,0 +1,4 @@
+class HelpController < ApplicationController
+  
+  
+end

@@ -1,0 +1,156 @@
+<script language="javascript">
+	$(function() {
+			$("#view_date").datepicker({
+				changeMonth: true,
+				changeYear: true,
+				dateFormat: 'dd M yy',
+				maxDate: 0
+		});
+	});
+	item_form_validator = {
+	    validate: function (input_obj) {
+			if (input_obj.id in this.validatees)
+				(this.validatees[input_obj.id])(input_obj);
+			else 
+				alert("item_form_validator does not validate '" + input_obj.id+"'");
+	    },
+		validate_form: function() {
+			var bool = true;
+			
+			for (var i in this.validatees)
+			{
+				bool = (this.validatees[i])(jQuery("#"+i)[0]) && bool;
+			}
+	
+			return bool;
+		},
+		validatees : {
+			"view_date" : function (input_obj) {
+				return validate_input_obj(input_obj,function (s) {
+					if ($.trim(s)=="")return null;
+					if (!($.trim(s).match(/^[0-9]{2} [A-Za-z]{3} [0-9]{4}$/)))
+					{
+						return "Must be date with format DD MMM YYYY";
+					}
+					else
+					{
+						split_day = s.split(' ');
+						month = ["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"];
+						is_match = false;
+						for(i=0;i<month.length;i++)
+						{
+							if (split_day[1].toLowerCase() == month[i])
+							{
+								is_match = true;
+								break;
+							}
+							
+						}
+						if (is_match) {
+							selected_date = new Date(split_day[2], i, split_day[0], 00, 00, 00, 0);
+							
+							var currentTime = new Date();
+							if (selected_date > currentTime) {
+								return "selected date is invalid";
+							}
+							else {
+								return null;
+							}
+						}
+						else
+						{
+							return "selected date is invalid";
+						}
+					}
+				});
+			}
+			
+		}
+	}
+	
+	function view_report()
+	{
+		if (!item_form_validator.validate_form()) return;
+		try {
+			$('#view_report_button').loading_button(true);
+			$.ajax({
+				type: "POST",
+				url: '/home/view_report',
+				cache: false,
+				data: {
+					view_date: $('#view_date').val()
+				},
+				success: function(data){
+					try {
+						if (data.ok == true) {
+							$('#report_unit').replaceWith(data.html);
+						}
+						else
+						{
+							$('#view_date').ruby_box(true,data.error_message);
+						}
+					} 
+					catch (e) {
+						alert(e);
+					}
+					$('#view_report_button').loading_button(false);
+				},
+				error: function(req, status, e){
+					$('#view_report_button').loading_button(false);
+					alert('Cannot connect to the server. Please try again later.');
+				}
+			});
+		} catch (e)
+		{
+			$('#view_report_button').loading_button(false);
+			alert(e);
+		}
+	}
+
+</script>
+
+<div id="graph_container" class="margin-top-1">
+		<span class="span-100 round_corner-10 seaGreentodarkSeaGreen padding-top-8px padding-bottom-8px">
+			<span class="span-98 margin-left-1">
+				<span class="span-98 margin-top-3">
+					<span class="float-left logo_dynonamics margin-left-6">
+					</span>
+					<span class="float-left margin-top-1 margin-left-4" style="color:#FFF;">
+						<span class="span-76">
+							<span class="span-76 text-shadow-black font30 bold_font">
+								Report
+								<span class="float-right">
+									<a href="/home/index" class="dyno_button">
+										Setting
+									</a>
+									<a href="/help" class="dyno_button margin-left-1">
+										Help
+									</a>
+								</span>
+							</span>
+							<span class="span-76 font16 bold_font margin-top-4px" style="color:#72859e;">
+								for <%=$user.app_name%>
+							</span>
+							<span class="span-76 margin-top-2">
+								<span class="span-6 font16 bold_font" style="color:#72859e;">
+									Date:
+								</span>
+								
+								<span class="span-70 font16 bold_font" style="color:#72859e;">
+									
+									<input class="dark_gray span-15 postbox_input" style="margin-top:2px;"  id="view_date"  onkeyup="item_form_validator.validate(this);" type="text" value="<%=DateTime.now.strftime('%d %b %Y')%>"/>
+								
+									<a href="#" class="dyno_button margin-left-1" id="view_report_button" onclick="view_report();return false;">
+										View
+									</a>
+								</span>
+							</span>
+						</span>
+					</span>
+				</span>
+				<%=render :partial=>"home/report_graph" ,:locals=>{:date=>DateTime.now.strftime('%Y-%m-%d')}%>
+			</span>
+		</span>
+	</div>
+
+

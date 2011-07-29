@@ -1,0 +1,309 @@
+<script language="javascript">
+	min_max_dyno_form_validator = {
+	    validate: function (input_obj) {
+			if (input_obj.id in this.validatees)
+				(this.validatees[input_obj.id])(input_obj);
+			else 
+				alert("item_form_validator does not validate '" + input_obj.id+"'");
+	    },
+		validate_form: function() {
+			var bool = true;
+			
+			for (var i in this.validatees)
+			{
+				bool = (this.validatees[i])(jQuery("#"+i)[0]) && bool;
+			}
+	
+			return bool;
+		},
+		validatees : {
+			"max_dyno" : function (input_obj) {
+				return validate_input_obj(input_obj,get_number_errors);
+			},
+			"min_dyno" : function (input_obj) {
+				return validate_input_obj(input_obj,get_number_errors);
+			}
+			
+		}
+	}
+	
+	avg_waiting_time_form_validator = {
+	    validate: function (input_obj) {
+			if (input_obj.id in this.validatees)
+				(this.validatees[input_obj.id])(input_obj);
+			else 
+				alert("item_form_validator does not validate '" + input_obj.id+"'");
+	    },
+		validate_form: function() {
+			var bool = true;
+			
+			for (var i in this.validatees)
+			{
+				bool = (this.validatees[i])(jQuery("#"+i)[0]) && bool;
+			}
+	
+			return bool;
+		},
+		validatees : {
+			"avg_waiting_time" : function (input_obj) {
+				return validate_input_obj(input_obj,get_number_errors);
+			}
+			
+		}
+	}
+
+	function submit_password()
+	{
+		$('#password').ruby_box(false);
+		try {
+			
+			$('#save_password_button').loading_button(true);
+			$.ajax({
+				type: "POST",
+				url: '/home/save_password',
+				cache: false,
+				data: {
+					authenticity_token: "<%=form_authenticity_token%>",
+					password: $('#password').val()
+				},
+				success: function(data){
+					try {
+						if (data.ok == true) {
+							$('#password_message').html('Verfied successfully')
+							$('#password').val('');
+						}
+						else
+						{
+							$('#password').ruby_box(true,data.error_message);
+						}
+					} 
+					catch (e) {
+						alert(e);
+					}
+					$('#save_password_button').loading_button(false);
+				},
+				error: function(req, status, e){
+					$('#save_password_button').loading_button(false);
+					alert('Cannot connect to the server. Please try again later.');
+				}
+			});
+		} catch (e)
+		{
+			$('#save_password_button').loading_button(false);
+			alert(e);
+		}
+	}
+	
+	function submit_min_max_dyno()
+	{
+		if (!min_max_dyno_form_validator.validate_form()) return;
+		
+		if (parseInt($('#min_dyno').val()) > parseInt($('#max_dyno').val()))
+		{
+			$('#min_max_dyno_button').ruby_box(true,"Min. dyno cannot exceed max. dyno.");
+			return;
+		}
+		
+		$('#max_dyno').ruby_box(false);
+		$('#min_dyno').ruby_box(false);
+		$('#min_max_dyno_button').ruby_box(false);
+		
+		try {
+			
+			$('#min_max_dyno_button').loading_button(true);
+			
+			$.ajax({
+				type: "POST",
+				url: '/home/save_min_max_dyno',
+				cache: false,
+				data: {
+					authenticity_token: "<%=form_authenticity_token%>",
+					max_dyno: $('#max_dyno').val(),
+					min_dyno: $('#min_dyno').val()
+				},
+				success: function(data){
+					try {
+						if (data.ok == true) {
+							$('#min_max_dyno_message').html("Save Successfully!");
+						}
+						else
+						{
+							$('#min_max_dyno_button').ruby_box(true,data.error_message);
+						}
+					} 
+					catch (e) {
+						alert(e);
+					}
+					$('#min_max_dyno_button').loading_button(false);
+				},
+				error: function(req, status, e){
+					$('#min_max_dyno_button').loading_button(false);
+					alert('Cannot connect to the server. Please try again later.');
+				}
+			});
+		} catch (e)
+		{
+			$('#min_max_dyno_button').loading_button(false);
+			alert(e);
+		}
+	}
+	
+	function submit_avg_waiting_time()
+	{
+		if (!avg_waiting_time_form_validator.validate_form()) return;
+		
+		$('#avg_waiting_time').ruby_box(false);
+		try {
+			$('#avg_waiting_time_button').loading_button(true);
+			$.ajax({
+				type: "POST",
+				url: '/home/save_avg_waiting_time',
+				cache: false,
+				data: {
+					authenticity_token: "<%=form_authenticity_token%>",
+					avg_waiting_time: $('#avg_waiting_time').val()
+				},
+				success: function(data){
+					try {
+						if (data.ok == true) {
+							$('#avg_waiting_time_message').html("Save Successfully!");
+						}
+						else
+						{
+							$('#avg_waiting_time').ruby_box(true,data.error_message);
+						}
+					} 
+					catch (e) {
+						alert(e);
+					}
+					$('#avg_waiting_time_button').loading_button(false);
+				},
+				error: function(req, status, e){
+					$('#avg_waiting_time_button').loading_button(false);
+					alert('Cannot connect to the server. Please try again later.');
+				}
+			});
+		} catch (e)
+		{
+			$('#avg_waiting_time_button').loading_button(false);
+			alert(e);
+		}
+	}
+	
+</script>
+<%
+	if $user.api_key == ""
+%>
+<span class="span-666 margin-top-1 margin-bottom-1" style="color:#72859e;">
+	<span class="span-65 margin-left-1">
+		<span class="span-22">
+			<span class="span-22 font16 bold_font" style="color:#BFB8E5;line-height:35px;">
+				Password
+			</span>
+			<span class="span-22 margin-top-1">
+				&bull; We strictly do <b>NOT</b> retain your password in our database.<br/>
+				&bull; We do not use your password for any purposes except for verification. Please see <a href="/help#q2">Help</a> for explanation.
+			</span>
+		</span>
+		<span class="span-41 margin-left-2">
+			<span class="span-40 font14 bold_font">
+				You must verify your Heroku account in order to start using Dynonamics.
+			</span>
+			<span class="span-40 margin-top-1">
+				<input type="password" id="password" class="input_type float-left" style="margin-top:4px; color:#82859E;width:200px;" />
+			</span>
+			<span class="span-40 margin-top-1">
+				<a href="#" class="dyno_button" id="save_password_button"  onclick="submit_password();return false;">
+					Verify
+				</a>
+				<span  id="password_message" class="margin-left-1" style="line-height:28px;">
+
+				</span>
+			</span>
+		</span>
+	</span>
+	<span class="span-666 hr margin-top-1">
+	</span>
+</span>
+<%
+	end
+%>
+<span class="span-666 margin-top-1 margin-bottom-1" style="color:#72859e;">
+	<span class="span-65 margin-left-1">
+		<span class="span-22">
+			<span class="span-22 font16 bold_font" style="color:#BFB8E5;line-height:35px;">
+				Dyno's range
+			</span>
+			<span class="span-22 margin-top-1">
+				&bull; Your dyno will never go lower than your min. dyno and never exceed your max. dyno.<br/>
+				&bull; If you set min. dyno to 1, please read and understand <a href="http://devcenter.heroku.com/articles/dyno-idling" target="_dyno_idling">Dyno idling</a>.
+			</span>
+		</span>
+		<span class="span-41 margin-left-2">
+			<span class="span-40 margin-top-1">
+				<span class="span-9" style="line-height:35px;">
+					Min. Dyno:
+				</span>
+				<span class="span-20">
+					<input type="text" id="min_dyno" name="<%=rand()%>" value="<%=$user.min_dyno%>" class="input_type" style="margin-top:4px; color:#82859E;width:50px;" />
+				</span>
+			</span>
+			<span class="span-40 margin-top-1">
+				<span class="span-9" style="line-height:35px;">
+					Max. Dyno:
+				</span>
+				<span class="span-20">
+					 <input type="text" id="max_dyno" name="<%=rand()%>" value="<%=$user.max_dyno%>" class="input_type" style="margin-top:4px; color:#82859E;width:50px;" />
+				</span>
+			</span>
+			<span class="span-40 margin-top-1">
+				<span class="span-9">
+					&nbsp;
+				</span>
+				<span class="span-31">
+					<a href="#" class="dyno_button" id="min_max_dyno_button"   onclick="submit_min_max_dyno();return false;">
+						Save
+					</a>
+					<span  id="min_max_dyno_message" class="margin-left-1" style="line-height:28px;">
+
+					</span>
+				</span>
+			</span>
+		</span>
+	</span>
+	<span class="span-666 hr margin-top-1">
+	</span>
+</span>
+<span class="span-666 margin-top-1 margin-bottom-1" style="color:#72859e;">
+	<span class="span-65 margin-left-1">
+		<span class="span-22">
+			<span class="span-22 font16 bold_font" style="color:#BFB8E5;line-height:35px;">
+				Avg. Waiting Time
+			</span>
+			<span class="span-22 margin-top-1">
+				&bull; The smaller it is, the shorter users wait.
+				(But you will have to use more dynos)
+			</span>
+		</span>
+		<span class="span-41 margin-left-2">
+			<span class="span-11">
+				<input type="text" id="avg_waiting_time" name="<%=rand()%>" value="<%=($user.avg_waiting_time * 1000).to_i%>" onkeyup="avg_waiting_time_form_validator.validate(this);" class="input_type float-left" style="margin-top:4px; color:#82859E;width:80px;" /> 
+			</span>
+			<span class="span-9 font16" style="line-height:35px;">
+				Milliseconds
+			</span>
+			<span class="span-40 margin-top-1">
+				<a href="#" class="dyno_button" id="avg_waiting_time_button"  onclick="submit_avg_waiting_time();return false;">
+					Save
+				</a>
+				<span  id="avg_waiting_time_message" class="margin-left-1" style="line-height:35px;">
+
+				</span>
+			</span>
+		</span>
+	</span>
+	<span class="span-666 hr margin-top-1 margin-bottom-1">
+	</span>
+</span>	
+
+	
