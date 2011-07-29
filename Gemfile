@@ -10,6 +10,8 @@ gem 'log4r'
 gem 'rake','0.8.7'
 gem 'mysql2', '0.2.6'
 
+gem 'rest-client'
+
 # Use unicorn as the web server
 # gem 'unicorn'
 
