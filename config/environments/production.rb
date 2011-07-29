@@ -48,4 +48,9 @@ DynonamicsServer3::Application.configure do
   config.active_support.deprecation = :notify
 end
 
-DOMAIN_NAME = "dynonamics.heroku.com"
+
+if ENV['STAGING']
+  DOMAIN_NAME = "dynonamics-staging.heroku.com"
+else
+  DOMAIN_NAME = "dynonamics.heroku.com"
+end

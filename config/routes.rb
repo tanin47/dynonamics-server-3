@@ -55,6 +55,9 @@ DynonamicsServer3::Application.routes.draw do
   # This is a legacy wild controller route that's not recommended for RESTful applications.
   # Note: This route will make all actions in every controller accessible via GET requests.
   # 
+#  namespace "heroku" do
+#    resources :resources
+#  end
   
   match 'heroku/resources' => 'heroku#create', :conditions => { :method => :post }
   match 'heroku/resources/:id' => 'heroku#destroy', :conditions => { :method => :delete }

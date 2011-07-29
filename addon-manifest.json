@@ -1,7 +1,7 @@
 {
   "id": "dynonamics-staging",
   "api": {
-    "config_vars": [ "DYNONAMICS_DYNO_URL" ],
+    "config_vars": [ "DYNONAMICS_STAGING_DYNO_URL" ],
     "password": "QcHMJWvQvcmMyr84",
     "sso_salt": "hfowTlDeuZT70njl",
     "production": "https://dynonamics-staging.heroku.com/",

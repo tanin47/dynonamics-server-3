@@ -1,7 +1,7 @@
 class HerokuController < ApplicationController
-  
+
   before_filter :authenticate_heroku
-  
+
   def create
     
     logger.debug { "params_from_heroku=#{params.inspect}" }
@@ -19,9 +19,15 @@ class HerokuController < ApplicationController
                         :max_worker=>5,
                         :min_worker=>0,
                         :avg_waiting_time=>0.1)
+                        
+    if ENV['STAGING']
+      key_url = "DYNONAMICS_STAGING_DYNO_URL"
+    else
+      key_url = "DYNONAMICS_DYNO_URL"
+    end
     
     render :json => {:id=>user.id,
-                    :config=>{'DYNONAMICS_DYNO_URL'=>"http://"+DOMAIN_NAME+"/dynologger/"+user.dynonamics_key
+                    :config=>{key_url=>"http://"+DOMAIN_NAME+"/dynologger/"+user.dynonamics_key
                             }
                      } 
   end
@@ -29,7 +35,8 @@ class HerokuController < ApplicationController
   def destroy
     user = User.first(:conditions=>{:id=>params[:id]})
     
-    user.destroy if user
+    user.status = "INACTIVE"
+    user.save
     
     head :ok
   end
@@ -41,5 +48,4 @@ class HerokuController < ApplicationController
         user == HEROKU_PROVIDER_NAME && password == HEROKU_PASSWORD
       end
     end
-  
 end
