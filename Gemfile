@@ -12,6 +12,22 @@ gem 'mysql2', '0.2.6'
 
 gem 'rest-client'
 
+gem 'rails3-generators'
+
+gem 'delayed_job'
+
+gem 'rspec', :group => [:development, :test]
+gem 'rspec-rails', :group => [:development, :test]
+gem 'database_cleaner', :group => :test
+gem 'factory_girl_rails', :group => :test
+
+gem 'cucumber-rails', :group => :test
+gem 'capybara', :group => :test
+
+gem 'win32-process', :group => :test
+gem 'spork', :git => "https://github.com/timcharper/spork.git", :group => :test
+gem 'watchr', :group => :test
+
 # Use unicorn as the web server
 # gem 'unicorn'
 
