@@ -1,4 +1,4 @@
-class Tuner
+class DynoTuner
   include TunerHelper
   
   def initialize(user_id)
@@ -11,7 +11,7 @@ class Tuner
       
       user = User.first(:conditions=>{:id=>@user_id})
       
-      return if !user
+      return if !user or user.status != User::STATUS_ACTIVE
       
       return if user.last_adjustment_time and (Time.now.utc.to_i - user.last_adjustment_time.utc.to_i) < ADJUSTMENT_INTERVAL_SECONDS
       
@@ -43,7 +43,7 @@ class Tuner
                       
     end
     
-    Delayed::Job.enqueue(Tuner.new(@user_id),0,30.minutes.from_now.utc)
+    Delayed::Job.enqueue(DynoTuner.new(@user_id),:run_at=> 30.minutes.from_now.utc)
   end
     
   def adjust_dyno(log,user)
@@ -51,7 +51,9 @@ class Tuner
       avg_wait_time = (log.sum_wait_time.to_f / log.num_requests.to_f)
       avg_service_time = (log.sum_service_time.to_f / log.num_requests.to_f)
       
-      dyno = (HerokuClient.get_info(user.app_name,user.username,user.api_key)[:dynos].to_i rescue 0)
+      last_dyno_history = DynoHistory.first(:conditions=>{:user_id=>user.id},:order=>"created_time DESC")
+      
+      dyno = (HerokuClient.get_info(user.app_name,user.username,user.api_key)[:dynos].to_i rescue (last_dyno_history.after_number rescue 0))
 
       new_dyno,new_wait_time =  calculate_dyno_by_MMn({:dyno=> dyno.to_f,
                                   :avg_service_time=>avg_service_time.to_f,
@@ -62,7 +64,7 @@ class Tuner
                                   :max_dyno=>user.max_dyno.to_f,
                                   :min_dyno=>1.to_f})
       
-      # don't adjust to be less than 2
+      # don't adjust to be less than user.min_dyno
       new_dyno = user.min_dyno if new_dyno < user.min_dyno
       new_dyno = user.max_dyno if new_dyno > user.max_dyno
       new_dyno = dyno if user.status != User::STATUS_ACTIVE

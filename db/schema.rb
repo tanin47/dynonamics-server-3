@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110729113517) do
+ActiveRecord::Schema.define(:version => 20110729114841) do
 
   create_table "aesirs", :force => true do |t|
     t.string   "username"
@@ -56,6 +56,7 @@ ActiveRecord::Schema.define(:version => 20110729113517) do
     t.datetime "created_date",                                                 :default => '2011-07-29 11:47:34'
   end
 
+  add_index "logs", ["user_id", "status", "id"], :name => "index_logs_on_user_id_and_status_and_id"
   add_index "logs", ["user_id", "status"], :name => "index_logs_on_user_id_and_status"
 
   create_table "tuner_logs", :force => true do |t|
@@ -82,6 +83,7 @@ ActiveRecord::Schema.define(:version => 20110729113517) do
     t.datetime "last_adjustment_time"
   end
 
+  add_index "users", ["dynonamics_key"], :name => "index_users_on_dynonamics_key"
   add_index "users", ["status"], :name => "index_users_on_status"
 
   create_table "worker_histories", :force => true do |t|

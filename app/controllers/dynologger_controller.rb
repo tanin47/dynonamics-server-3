@@ -4,7 +4,7 @@ class DynologgerController < ApplicationController
 
     user = User.first(:conditions=>{:dynonamics_key=>params[:dynonamics_key]})
 
-    logger.info { "user is not nil" } and \
+    Rails.logger.info { "user is not nil" } and \
     render :text=>"Key is invalid. (" + params[:dynonamics_key] + ")" and return if !user
 
     log = Log.new( :user_id=>user.id,
@@ -19,7 +19,7 @@ class DynologgerController < ApplicationController
                 :status=>Log::STATUS_PENDING
                 )
                 
-    logger.info { "Cannot save log error_message=#{log.errors.full_messages}" } if !log.save
+    Rails.logger.info { "Cannot save log error_message=#{log.errors.full_messages}" } if !log.save
                 
     render :text=>"OK"
 

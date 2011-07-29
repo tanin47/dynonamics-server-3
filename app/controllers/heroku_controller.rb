@@ -4,7 +4,7 @@ class HerokuController < ApplicationController
 
   def create
     
-    logger.debug { "params_from_heroku=#{params.inspect}" }
+    Rails.logger.debug { "params_from_heroku=#{params.inspect}" }
     
     user = User.create(:status=>User::STATUS_ACTIVE,
                         :plan=>params[:plan],

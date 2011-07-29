@@ -1,5 +1,5 @@
 class HomeController < ApplicationController
-#  protect_from_forgery
+  protect_from_forgery
   before_filter :authenticate_heroku_single_signon, :check_admin
   
   def index
@@ -12,9 +12,6 @@ class HomeController < ApplicationController
     begin
       require 'json'
       response  = JSON.parse(HerokuClient.submit("/login","post",{:accept=>"json"},{ :username => $user.username, :password => params[:password] },$user.username,params[:password]))
-      
-      require 'pp'
-      pp response
       
       $user.api_key = response['api_key']
       $user.save

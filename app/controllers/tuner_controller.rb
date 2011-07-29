@@ -8,7 +8,7 @@ class TunerController < ApplicationController
     users = User.all(:conditions=>{:status=>User::STATUS_ACTIVE})
     
     users.each { |user|
-      Tuner.new(user.id).perform
+      Delayed::Job.enqueue DynoTuner.new(user.id)
     }
     
     render :text=> "OK"

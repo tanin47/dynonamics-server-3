@@ -3,7 +3,7 @@ module TunerHelper
   private
     def calculate_dyno_by_MMn(data)
       
-      logger.debug { "Enter calculate_dyno_by_MMn() data=#{data.inspect}" }
+      Rails.logger.debug { "Enter calculate_dyno_by_MMn() data=#{data.inspect}" }
       
       delta = 1  # too few dynos
       delta = -1 if data[:wanted_wait_time] > data[:actual_wait_time] # too many dynos
@@ -14,17 +14,17 @@ module TunerHelper
       dyno = data[:dyno]
       gap = (data[:wanted_wait_time] - data[:actual_wait_time]).abs
       
-      logger.debug { "delta=#{delta},u=#{u}, l=#{l},dyno=#{dyno}, gap=#{gap}, current_wait_time=#{calculate_wait_time(dyno,u,l)}" }
+      Rails.logger.debug { "delta=#{delta},u=#{u}, l=#{l},dyno=#{dyno}, gap=#{gap}, current_wait_time=#{calculate_wait_time(dyno,u,l)}" }
       
       # queue will quickly have infinite number of requests, therefore, return max_dyno
-      logger.debug { "l > (dyno*u) = #{l > (dyno*u)}" } 
+      Rails.logger.debug { "l > (dyno*u) = #{l > (dyno*u)}" } 
       while (l > (dyno*u) and dyno <= data[:max_dyno])
         dyno = dyno + 1
       end
       
       while (data[:min_dyno] <= dyno && dyno <= data[:max_dyno])
           wait_time = calculate_wait_time(dyno + delta,u,l)
-          logger.debug { "dyno=#{dyno+delta},wait=#{wait_time}" }
+          Rails.logger.debug { "dyno=#{dyno+delta},wait=#{wait_time}" }
           
           dyno = dyno + delta
           
@@ -37,14 +37,14 @@ module TunerHelper
           
           gap = (data[:wanted_wait_time]-wait_time).abs
           
-          logger.debug { "gap=#{gap}"}
+          Rails.logger.debug { "gap=#{gap}"}
       end
       
       # ensure again
       dyno = data[:min_dyno] if dyno < data[:min_dyno]
       dyno = data[:max_dyno] if dyno > data[:max_dyno]
       
-      logger.debug { "Exit calculate_dyno_by_MMn() with dyno=#{dyno},expected_wait_time=#{dyno}"}
+      Rails.logger.debug { "Exit calculate_dyno_by_MMn() with dyno=#{dyno},expected_wait_time=#{dyno}"}
     
       return dyno,wait_time
     end
@@ -52,7 +52,7 @@ module TunerHelper
   private
     def calculate_wait_time(c,u,l)
       
-      logger.debug { "Enter calculate_wait_time()" }
+      Rails.logger.debug { "Enter calculate_wait_time()" }
 
       c = c.to_f
       roh = l / (c*u)
@@ -61,28 +61,28 @@ module TunerHelper
       
       pie = calculate_pie(roh,b)
       
-      logger.debug { "c=#{c},u=#{u},l=#{l},roh=#{roh},b=#{b},pie=#{pie}" }
-      logger.debug { "Exit calculate_wait_time() with #{(pie/((c*u) - l))}" }
+      Rails.logger.debug { "c=#{c},u=#{u},l=#{l},roh=#{roh},b=#{b},pie=#{pie}" }
+      Rails.logger.debug { "Exit calculate_wait_time() with #{(pie/((c*u) - l))}" }
       
       return  pie / ((c*u) - l)
     end
   
   private
     def calculate_pie(roh,b)
-      logger.debug { "Enter calculate_pie(), roh=#{roh},b=#{b}" }
-      logger.debug { "Exit calculate_pie() with #{(roh*b / (1.to_f - roh + (roh*b)))}" }
+      Rails.logger.debug { "Enter calculate_pie(), roh=#{roh},b=#{b}" }
+      Rails.logger.debug { "Exit calculate_pie() with #{(roh*b / (1.to_f - roh + (roh*b)))}" }
       return roh*b / (1.to_f - roh + (roh*b))
     end
   
   private
     def calculate_b(c,roh)
-      logger.debug { "Enter calculate_b(), c=#{c},roh=#{roh}" }
+      Rails.logger.debug { "Enter calculate_b(), c=#{c},roh=#{roh}" }
       b = 1.to_f
       (1..c).each { |f| 
         b = (roh * b) / (f + (roh*b))
       }
       
-      logger.debug { "Exit calculate_b() with #{b}" }
+      Rails.logger.debug { "Exit calculate_b() with #{b}" }
       return b
     end
 end
