@@ -13,7 +13,7 @@ class DynoTuner
       
       return if !user or user.status != User::STATUS_ACTIVE
       
-      return if user.last_adjustment_time and (Time.now.to_i - user.last_adjustment_time.to_i) < ADJUSTMENT_INTERVAL_SECONDS
+      return if user.last_adjustment_time and (Time.now.to_i - user.last_adjustment_time.to_i) < (ADJUSTMENT_INTERVAL_MINUTES*60-2)
       
       conditions = ["status=? AND user_id=?",Log::STATUS_PENDING,@user_id]
       
@@ -43,7 +43,7 @@ class DynoTuner
                       
     end
     
-    Delayed::Job.enqueue(DynoTuner.new(@user_id),:run_at=> ADJUSTMENT_INTERVAL_SECONDS.minutes.from_now)
+    Delayed::Job.enqueue(DynoTuner.new(@user_id),:run_at=> ADJUSTMENT_INTERVAL_MINUTES.minutes.from_now)
   end
     
   def adjust_dyno(log,user)
