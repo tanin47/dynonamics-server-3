@@ -18,7 +18,6 @@ class HomeController < ApplicationController
       
       render :json=>{:ok=>true}
     rescue Exception=>e
-      print "Error while logging in: #{e}\n\n"
       render :json=>{:ok=>false,:error_message=>"Cannot verify password with Heroku.com. Please try again later."}
     end
     

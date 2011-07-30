@@ -4,8 +4,18 @@ class DynologgerController < ApplicationController
 
     user = User.first(:conditions=>{:dynonamics_key=>params[:dynonamics_key]})
 
-    Rails.logger.info { "user is not nil" } and \
-    render :text=>"Key is invalid. (" + params[:dynonamics_key] + ")" and return if !user
+    if !user
+      Rails.logger.info { "user is nil" }
+      render :text=>"Key is invalid."
+      return 
+    end
+    
+    if user.status != User::STATUS_ACTIVE
+      Rails.logger.info { "user is not active" }
+      render :text=>"User is not active."
+      return 
+      
+    end
 
     log = Log.new( :user_id=>user.id,
                 :http_x_request_start=>params[:http_x_request_start],
@@ -18,8 +28,10 @@ class DynologgerController < ApplicationController
                 :created_date=>Time.now,
                 :status=>Log::STATUS_PENDING
                 )
-                
-    Rails.logger.info { "Cannot save log error_message=#{log.errors.full_messages}" } if !log.save
+    
+    if !log.save
+      Rails.logger.info { "Cannot save log error_message=#{log.errors.full_messages}" } 
+    end
                 
     render :text=>"OK"
 

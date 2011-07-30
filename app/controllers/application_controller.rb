@@ -39,7 +39,7 @@ class ApplicationController < ActionController::Base
     
     $user = nil
     
-    if RAILS_ENV == "development"
+    if Rails.env == "development"
       $user = User.first(:conditions=>{:id=>1})
       session[:heroku_sso] = true
       #$user.obtain_user_data
@@ -48,11 +48,11 @@ class ApplicationController < ActionController::Base
   
     
     if params[:id] and params[:timestamp]
-      pre_token = params[:id] + ':' + HEROKU_SSO_SALT + ':' + params[:timestamp]
+      pre_token = "#{params[:id]}:#{HEROKU_SSO_SALT}:#{params[:timestamp]}"
       token = Digest::SHA1.hexdigest(pre_token).to_s
       
       render :nothing=>true, :status => 403 and return if params[:token] != token
-      render :nothing=>true, :status => 403 and return if params[:timestamp].to_i < (Time.now - 2*60).to_i
+      render :nothing=>true, :status => 403 and return if params[:timestamp].to_i < (Time.now - 5*60).to_i
   
   
       $user = User.find(params[:id])
