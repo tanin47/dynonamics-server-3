@@ -43,7 +43,7 @@ class DynoTuner
                       
     end
     
-    Delayed::Job.enqueue(DynoTuner.new(@user_id),:run_at=> 30.minutes.from_now.utc)
+    Delayed::Job.enqueue(DynoTuner.new(@user_id),:run_at=> ADJUSTMENT_INTERVAL_SECONDS.minutes.from_now.utc)
   end
     
   def adjust_dyno(log,user)
