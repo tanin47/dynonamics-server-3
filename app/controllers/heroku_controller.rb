@@ -35,7 +35,7 @@ class HerokuController < ApplicationController
   def destroy
     user = User.first(:conditions=>{:id=>params[:id]})
     
-    user.status = "INACTIVE"
+    user.status = User::STATUS_DELETED
     user.save
     
     head :ok

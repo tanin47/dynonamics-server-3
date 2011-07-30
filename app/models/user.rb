@@ -5,6 +5,7 @@ class User < ActiveRecord::Base
 
   STATUS_ACTIVE = "ACTIVE"
   STATUS_INACTIVE = "INACTIVE"
+  STATUS_DELETED = "DELETED"
   
   validates_numericality_of :max_dyno,:only_integer => true, :message => "please enter a number"
   validates_numericality_of :max_dyno,:greater_than => 0, :message => "please enter max dyno greater than 0"
