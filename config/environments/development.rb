@@ -24,5 +24,5 @@ DynonamicsServer3::Application.configure do
 end
 
 DOMAIN_NAME = "localhost:3000"
-ENV['STAGING'] = "true"
+ENV['DYNONAMICS_STAGING'] = "true"
 

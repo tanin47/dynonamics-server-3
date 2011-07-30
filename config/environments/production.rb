@@ -49,7 +49,7 @@ DynonamicsServer3::Application.configure do
 end
 
 
-if ENV['STAGING']
+if ENV['DYNONAMICS_STAGING']
   DOMAIN_NAME = "dynonamics-staging.heroku.com"
 else
   DOMAIN_NAME = "dynonamics.heroku.com"

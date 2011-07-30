@@ -20,7 +20,7 @@ class HerokuController < ApplicationController
                         :min_worker=>0,
                         :avg_waiting_time=>0.1)
                         
-    if ENV['STAGING']
+    if ENV['DYNONAMICS_STAGING']
       key_url = "DYNONAMICS_STAGING_DYNO_URL"
     else
       key_url = "DYNONAMICS_DYNO_URL"
