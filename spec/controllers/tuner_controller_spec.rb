@@ -49,6 +49,11 @@ describe TunerController do
     d = DynoHistory.first(:conditions=>{:user_id=>@user.id},:order=>"created_time DESC")
     
     d.after_number.should == 7
+    
+    user = User.first(:conditions=>@user.id)
+    
+    user.last_adjustment_time.should_not == nil
+    user.last_adjustment_time.to_i.should > (Time.now.to_i-30)
       
   end
   
@@ -78,6 +83,11 @@ describe TunerController do
     d = DynoHistory.first(:conditions=>{:user_id=>@user.id},:order=>"created_time DESC")
     
     d.after_number.should == 4
+    
+    user = User.first(:conditions=>@user.id)
+    
+    user.last_adjustment_time.should_not == nil
+    user.last_adjustment_time.to_i.should > (Time.now.to_i-30)
       
   end
   
@@ -95,6 +105,11 @@ describe TunerController do
     d.before_number_of_requests.should eql(0)
     d.before_wanted_time.should eql(0)
 
+
+    user = User.first(:conditions=>@user.id)
+    
+    user.last_adjustment_time.should_not == nil
+    user.last_adjustment_time.to_i.should > (Time.now.to_i-30)
   end
   
   it "user does not exist, therefore, there is not tuning" do
@@ -149,6 +164,13 @@ describe TunerController do
     
     Delayed::Worker.new.work_off
     
+    user = User.first(:conditions=>@user.id)
+    
+    user.last_adjustment_time.should_not == nil
+    user.last_adjustment_time.to_i.should > (Time.now.to_i-30)
+    
+    last_adjustment_time = user.last_adjustment_time
+    
     100.times { |i|
       Log.create(:user_id=>@user.id,
                 :incoming_time=>i,
@@ -167,6 +189,8 @@ describe TunerController do
     d = DynoHistory.count()
     
     d.should == 2
-      
+    
+    user = User.first(:conditions=>@user.id)
+    user.last_adjustment_time.to_i.should == last_adjustment_time.to_i
   end
 end
